@@ -1,0 +1,53 @@
+<!doctype html><html lang="zh-Hant"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>新竹貨運聯運地區查詢</title><style>
+:root{--navy:#173b63;--teal:#dff4f2;--line:#d8e0e8}*{box-sizing:border-box}body{margin:0;background:#f4f7fa;color:#182536;font:16px system-ui,"Microsoft JhengHei",sans-serif}.wrap{max-width:1040px;margin:32px auto;padding:0 18px}.hero{background:linear-gradient(120deg,#173b63,#267b83);color:white;border-radius:20px;padding:26px 28px}.hero h1{font-size:26px;margin:0 0 7px}.hero p{margin:0;opacity:.9}.search{margin:20px 0 12px;display:flex;gap:10px}.search input{flex:1;border:1px solid #cbd5df;border-radius:12px;padding:15px 16px;font-size:18px;outline-color:#267b83}.search button{border:0;border-radius:12px;padding:0 18px;background:#173b63;color:white;font-size:15px;cursor:pointer}.meta{color:#596a7a;font-size:14px;margin:8px 2px 14px}.results{display:grid;gap:12px}.card{background:white;border:1px solid var(--line);border-radius:14px;padding:16px 18px;box-shadow:0 3px 12px #162c4310}.top{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.branch{font-size:19px;font-weight:700;color:var(--navy)}.tag{font-size:12px;background:var(--teal);color:#11615c;padding:4px 8px;border-radius:99px}.details{margin-top:9px;line-height:1.7;color:#334558}.fare{display:flex;gap:10px;flex-wrap:wrap;margin-top:9px}.fare span{background:#f1f5f8;padding:6px 10px;border-radius:8px;font-size:14px}.empty{padding:30px;text-align:center;color:#5a6978;background:white;border-radius:14px}.note{margin:20px 2px;color:#697889;font-size:13px;line-height:1.6}mark{background:#fff0a8;border-radius:2px}@media(max-width:600px){.wrap{margin:18px auto}.hero h1{font-size:22px}.search{flex-direction:column}.search button{padding:12px}}
+</style><div class="wrap"><header class="hero"><h1>新竹貨運｜聯運地區即時查詢</h1><p>輸入縣市、鄉鎮、地區或里名，立即查看配送範圍與單據費率</p></header><div class="search"><input id="q" autofocus placeholder="例如：花蓮、仁愛鄉、台東、五股" autocomplete="off"><button id="clear">清除</button></div><div class="meta" id="count"></div><main class="results" id="results"></main><p class="note">費率依附件單據整理，配送安排、每公斤費、起碼費與聯絡方式請以原單最新版本及貨運站確認。輸入空白可瀏覽全部區域。本頁可離線使用。</p></div>
+<script>
+const rows=[
+{b:'基隆',t:'基隆市',d:'基隆監獄、基隆看守所；每週一／四配送',f:'起碼 120 元｜每公斤 240 元',p:2},
+{b:'五股',t:'新北市',d:'石門鄉；每週二／三／五配送；貨櫃場、碼頭等外銷結關貨件',f:'起碼 140 元｜每公斤 350 元',p:2},
+{b:'新店',t:'新北市',d:'清風園（軍事監獄）；石碇鄉、烏來鄉、坪林鄉；每週一至五配送',f:'起碼 120–140 元｜每公斤 240–350 元',p:2},
+{b:'土城',t:'新北市',d:'土城看守所、土林看守所、少年觀護所；每週一至五配送',f:'起碼 120 元｜每公斤 240 元',p:2},
+{b:'桃園',t:'桃園市',d:'桃園監獄；龜山鄉；大溪、復興、新屋、觀音等區域分週配送',f:'起碼 120–175 元｜每公斤 240–350 元',p:2},
+{b:'南崁',t:'桃園市',d:'桃園、蘆竹、大園等地；另列長榮貨件特殊安排',f:'一般起碼 120 元；部分貨件另計',p:2},
+{b:'中壢',t:'桃園市',d:'家樂福、富岡等指定區域',f:'起碼 80–120 元｜每公斤 160–240 元',p:2},
+{b:'平鎮',t:'桃園市',d:'龍潭女子監獄；台聯、東海、新隆及外銷結關貨件',f:'一般起碼 120 元｜每公斤 240 元；特定貨件 80／160 元',p:2},
+{b:'新竹',t:'新竹市',d:'新竹少年監獄',f:'起碼 120 元｜每公斤 240 元',p:2},
+{b:'新豐',t:'新竹縣',d:'清水里、新北里；關西鎮玉山里、錦山里、新富里等',f:'起碼 80 元｜每公斤 160 元',p:2},
+{b:'竹南',t:'苗栗縣',d:'斗煥坪新兵訓練中心',f:'起碼 120 元｜每公斤 240 元',p:2},
+{b:'苗栗',t:'苗栗縣',d:'苗栗看守所',f:'起碼 120 元｜每公斤 240 元',p:2},
+{b:'台中',t:'台中市',d:'大雅鄉清泉崗軍事基地',f:'起碼 120 元｜每公斤 240 元',p:2},
+{b:'東區',t:'台中市',d:'全台物流中心、看守所、女子監獄、少年觀護所等指定點',f:'起碼 120 元｜每公斤 240 元',p:2},
+{b:'南投',t:'南投縣',d:'南投看守所；鹿谷、竹山、集集等；仁愛鄉各村分週配送',f:'起碼 125–325 元｜每公斤 250–540 元',p:2},
+{b:'沙鹿',t:'台中市',d:'梧棲、貨櫃場及外銷結關貨件',f:'一般起碼 80 元｜每公斤 160 元',p:2},
+{b:'彰化',t:'彰化縣',d:'台灣化學公司',f:'起碼 175 元｜每公斤 75 元（依單據欄位）',p:2},
+{b:'員林',t:'彰化縣',d:'員林看守所',f:'起碼 120 元｜每公斤 240 元',p:2},
+{b:'田中',t:'彰化縣',d:'彰化少年感化院',f:'起碼 120 元｜每公斤 240 元',p:2},
+{b:'斗六',t:'雲林縣',d:'空軍基地、第一監獄、第二監獄；每週一至五配送',f:'起碼 120 元｜每公斤 240 元',p:2},
+{b:'嘉義',t:'嘉義縣市',d:'阿里山、竹崎等鄉鎮；部分山區每週配送，部分路段需等待轉運',f:'起碼 175–600 元｜每公斤 350–1,200 元',p:2},
+{b:'北港',t:'嘉義縣',d:'鹿草監獄、看守所；海埔新生地',f:'起碼 120–230 元｜每公斤 240–350 元',p:2},
+{b:'麻豆',t:'台南市',d:'白河新莊、官田等指定區域',f:'起碼 120 元｜每公斤 240 元',p:2},
+{b:'永康',t:'台南市',d:'白龍庵、看守所等指定區域',f:'起碼 120 元｜每公斤 240 元',p:2},
+{b:'台南',t:'台南市',d:'台南空軍基地',f:'起碼 120 元｜每公斤 240 元',p:2},
+{b:'大社',t:'高雄縣',d:'高雄看守所、旗山等指定區域',f:'起碼 120–140 元｜每公斤 240–250 元',p:2},
+{b:'高雄',t:'高雄市',d:'海軍軍區',f:'起碼 120 元｜每公斤 240 元',p:2},
+{b:'前鎮',t:'高雄市',d:'統一夢時代；高雄港碼頭、貨櫃場',f:'起碼 40–80 元｜每公斤 80–160 元',p:2},
+{b:'鳳山',t:'高雄市',d:'大寮鄉、女子監獄',f:'起碼 120 元｜每公斤 240 元',p:2},
+{b:'鳳屏',t:'屏東縣',d:'竹田鄉屏東監獄；屏東海軍基地、三軍等指定點',f:'起碼 120 元｜每公斤 240 元',p:2},
+{b:'羅東',t:'宜蘭縣',d:'大同、南澳等鄉鎮及指定路段，分週配送',f:'起碼 700 元｜每公斤 465 元',p:2},
+{b:'花蓮',t:'花蓮縣',d:'花蓮監獄；壽豐、秀林等鄉鎮，按區域排週配送',f:'起碼 120 元｜每公斤 240 元',p:2},
+{b:'玉里',t:'台東縣',d:'成功鎮、長濱鄉等鄉鎮',f:'起碼 90–195 元｜每公斤 180–390 元',p:2},
+{b:'台東',t:'台東縣',d:'台東監獄、看守所；部分偏遠鄉鎮分週配送',f:'起碼 120 元｜每公斤 240 元',p:2},
+{b:'南澳',t:'宜蘭縣',d:'南澳鄉、東岳、金洋、澳花等；每週二、五配',f:'起碼 75 元｜每公斤 130 元',p:1},
+{b:'花蓮山區',t:'花蓮縣',d:'秀林鄉、壽豐、鳳林、玉里等；部分路段每週配送',f:'起碼 110–850 元｜每公斤 220–1,600 元',p:1},
+{b:'基隆偏遠',t:'基隆市',d:'金山、野柳、萬里等指定路段',f:'起碼 75 元｜每公斤 130 元',p:1},
+{b:'台東山區',t:'台東縣',d:'鹿野、卑南等鄉鎮；另列外車轉運項目',f:'起碼 35–225 元｜每公斤 70–450 元',p:1},
+{b:'基隆所-瑞芳鎮',t:'基隆市',d:'侯硐里、弓橋里、光復里、碩仁里等',f:'外車轉運附表：依里別與路段安排',p:3},
+{b:'基隆所-金瓜石',t:'新北市',d:'瓜山里、石山里、新山里、銅山里',f:'外車轉運附表：依里別與路段安排',p:3},
+{b:'基隆所-鼻頭',t:'新北市',d:'鼻頭里',f:'外車轉運附表：依里別與路段安排',p:3},
+{b:'基隆所-水湳洞',t:'新北市',d:'南雅里、濂新里、濂洞里',f:'外車轉運附表：依里別與路段安排',p:3},
+{b:'基隆所-九份',t:'新北市',d:'頌德里、福住里、崇文里、基山里、永慶里',f:'外車轉運附表：依里別與路段安排',p:3},
+{b:'屏東所-恆春鎮',t:'屏東縣',d:'鵝鑾鼻里、墾丁里、水泉里、大光里、山海里',f:'外車轉運附表：依里別與路段安排',p:3},
+{b:'台東所-台東地區',t:'台東縣',d:'鹿野鄉、卑南鄉；瑞豐村、瑞源村、嘉豐村、利吉村、龍泉鄉、頂永豐等',f:'外車轉運附表：村里依原表列示',p:3}
+];
+const q=document.querySelector('#q'), out=document.querySelector('#results'), count=document.querySelector('#count');function draw(){let s=q.value.trim().toLowerCase();let hits=rows.filter(x=>(x.b+x.t+x.d+x.f).toLowerCase().includes(s));count.textContent=s?`找到 ${hits.length} 筆符合「${q.value}」的區域`:`共 ${rows.length} 筆已整理區域｜可輸入關鍵字篩選`;out.innerHTML=hits.length?hits.map(x=>`<article class="card"><div class="top"><span class="branch">${x.b}</span><span class="tag">${x.t}</span><span class="tag">單據第 ${x.p} 頁</span></div><div class="details">${x.d}</div><div class="fare"><span>${x.f}</span></div></article>`).join(''):'<div class="empty">沒有找到符合區域。可試試較短的地名，或輸入鄉鎮／里名。</div>'}q.addEventListener('input',draw);document.querySelector('#clear').onclick=()=>{q.value='';draw();q.focus()};draw();
+</script></html>
